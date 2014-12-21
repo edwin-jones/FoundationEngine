@@ -1,0 +1,9 @@
+﻿<Window x:Class="FoundationEngine.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Foundation Engine" Height="350" Width="525"
+        Loaded="Page_Loaded">
+    <Grid>
+        <Image x:Name="FrontBuffer"/>
+    </Grid>
+</Window>
