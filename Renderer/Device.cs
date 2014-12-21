@@ -1,19 +1,29 @@
-﻿//using Windows.UI.Xaml.Media.Imaging;
-//using System.Runtime.InteropServices.WindowsRuntime;
-using SharpDX;
-using System.ComponentModel;
-using System.Drawing.Imaging;
+﻿using SharpDX;
+using System;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using PixelFormat = System.Windows.Media.PixelFormat;
 
 namespace FoundationEngine.Renderer
 {
+    /// <summary>
+    /// This class represents a 3d rendering device. It is the most important part of the renderer.
+    /// </summary>
     class Device
     {
+        public const Int32 ViewPortWidth = 640;
+        public const Int32 ViewPortHeight = 480;
+        public const Int32 ViewPortDPI = 96;
+
         private byte[] backBuffer;
         private BitmapSource bmp;
         private System.Windows.Controls.Image renderContext;
 
+        /// <summary>
+        /// Ctor
+        /// </summary>
+        /// <param name="bmp"></param>
+        /// <param name="renderContext"></param>
         public Device(BitmapSource bmp, System.Windows.Controls.Image renderContext)
         {
             this.bmp = bmp;
@@ -23,7 +33,10 @@ namespace FoundationEngine.Renderer
             backBuffer = new byte[bmp.PixelWidth * bmp.PixelHeight * 4];
         }
 
-        // This method is called to clear the back buffer with a specific color
+        /// <summary>
+        /// This method is called to clear the back buffer with a specific color
+        /// </summary>
+        /// <param name="color"></param>
         public void Clear(System.Drawing.Color color)
         {
             for (var index = 0; index < backBuffer.Length; index += 4)
@@ -36,25 +49,31 @@ namespace FoundationEngine.Renderer
             }
         }
 
-        // Once everything is ready, we can flush the back buffer
-        // into the front buffer. 
+        /// <summary>
+        /// Once everything is ready, we can flush the back buffer into the front buffer. 
+        /// </summary>
         public void Present()
         {
-
             // Define parameters used to create the BitmapSource.
-            System.Windows.Media.PixelFormat pf = PixelFormats.Bgr32;
-            int width = 640;
-            int height = 480;
-            int rawStride = (width * pf.BitsPerPixel + 7) / 8;
+            PixelFormat pixelFormat = PixelFormats.Bgr32;
+            int width = ViewPortWidth;
+            int height = ViewPortHeight;
+            int rawStride = (width * pixelFormat.BitsPerPixel + 7) / 8;
             byte[] rawImage = new byte[rawStride * height];
 
             // Create a BitmapSource.
-            bmp = BitmapSource.Create(width, height, 96, 96, pf, null, backBuffer, rawStride);
+            bmp = BitmapSource.Create(width, height, ViewPortDPI, ViewPortDPI, pixelFormat, null, backBuffer, rawStride);
 
+            //set the rendercontext source to the newly rendered bitmap.
             renderContext.Source = bmp;
         }
 
-        // Called to put a pixel on screen at a specific X,Y coordinates
+        /// <summary>
+        /// Called to put a pixel on screen at a specific X,Y coordinates
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="color"></param>
         public void PutPixel(int x, int y, Color4 color)
         {
             // As we have a 1-D Array for our back buffer
@@ -68,8 +87,12 @@ namespace FoundationEngine.Renderer
             backBuffer[index + 3] = (byte)(color.Alpha * 255);
         }
 
-        // Project takes some 3D coordinates and transform them
-        // in 2D coordinates using the transformation matrix
+        /// <summary>
+        /// Project takes some 3D coordinates and transform them in 2D coordinates using the transformation matrix
+        /// </summary>
+        /// <param name="coord"></param>
+        /// <param name="transMat"></param>
+        /// <returns></returns>
         public Vector2 Project(Vector3 coord, SharpDX.Matrix transMat)
         {
             // transforming the coordinates
@@ -93,8 +116,64 @@ namespace FoundationEngine.Renderer
             }
         }
 
-        // The main method of the engine that re-compute each vertex projection
-        // during each frame
+        /// <summary>
+        /// Drawline calculates where a line should be and calls drawpoint for each part of the line. Useful for drawing lines between verts.
+        /// </summary>
+        /// <param name="point0"></param>
+        /// <param name="point1"></param>
+        public void DrawLine(Vector2 point0, Vector2 point1)
+        {
+            var dist = (point1 - point0).Length();
+
+            // If the distance between the 2 points is less than 2 pixels
+            // We're exiting
+            if (dist < 2)
+                return;
+
+            // Find the middle point between first & second point
+            Vector2 middlePoint = point0 + (point1 - point0) / 2;
+
+            // We draw this point on screen
+            DrawPoint(middlePoint);
+
+            // Recursive algorithm launched between first & middle point
+            // and between middle & second point
+            DrawLine(point0, middlePoint);
+            DrawLine(middlePoint, point1);
+        }
+
+        /// <summary>
+        /// improved drawline using Bresenham's line algorithm.
+        /// </summary>
+        public void DrawBLine(Vector2 point0, Vector2 point1)
+        {
+            int x0 = (int)point0.X;
+            int y0 = (int)point0.Y;
+            int x1 = (int)point1.X;
+            int y1 = (int)point1.Y;
+
+            var dx = Math.Abs(x1 - x0);
+            var dy = Math.Abs(y1 - y0);
+            var sx = (x0 < x1) ? 1 : -1;
+            var sy = (y0 < y1) ? 1 : -1;
+            var err = dx - dy;
+
+            while (true)
+            {
+                DrawPoint(new Vector2(x0, y0));
+
+                if ((x0 == x1) && (y0 == y1)) break;
+                var e2 = 2 * err;
+                if (e2 > -dy) { err -= dy; x0 += sx; }
+                if (e2 < dx) { err += dx; y0 += sy; }
+            }
+        }
+
+        /// <summary>
+        ///  The main method of the engine that re-compute each vertex projection during each frame
+        /// </summary>
+        /// <param name="camera"></param>
+        /// <param name="meshes"></param>
         public void Render(Camera camera, params Mesh[] meshes)
         {
             // To understand this part, please read the prerequisites resources
@@ -112,12 +191,19 @@ namespace FoundationEngine.Renderer
 
                 var transformMatrix = worldMatrix * viewMatrix * projectionMatrix;
 
-                foreach (var vertex in mesh.Vertices)
+                foreach (var face in mesh.Faces)
                 {
-                    // First, we project the 3D coordinates into the 2D space
-                    var point = Project(vertex, transformMatrix);
-                    // Then we can draw on screen
-                    DrawPoint(point);
+                    var vertexA = mesh.Vertices[face.A];
+                    var vertexB = mesh.Vertices[face.B];
+                    var vertexC = mesh.Vertices[face.C];
+
+                    var pixelA = Project(vertexA, transformMatrix);
+                    var pixelB = Project(vertexB, transformMatrix);
+                    var pixelC = Project(vertexC, transformMatrix);
+
+                    DrawBLine(pixelA, pixelB);
+                    DrawBLine(pixelB, pixelC);
+                    DrawBLine(pixelC, pixelA);
                 }
             }
         }
