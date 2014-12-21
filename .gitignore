@@ -44,4 +44,13 @@ Temporary Items
 .apdisk
 bin
 obj
+<<<<<<< HEAD
 packages
+=======
+packages
+packages/SharpDX.2.6.3/build/SharpDX.targets
+packages/SharpDX.2.6.3/lib/dummy.txt
+packages/SharpDX.2.6.3/SharpDX.2.6.3.nupkg
+packages/SharpDX.2.6.3/tools/Install.ps1
+packages/SharpDX.2.6.3/tools/UnInstall.ps1
+>>>>>>> origin/development
