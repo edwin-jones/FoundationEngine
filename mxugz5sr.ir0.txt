@@ -1,0 +1,36 @@
+﻿Merge remote-tracking branch 'origin/master' into development
+
+Conflicts:
+	.gitignore
+	FoundationEngine.v12.suo
+#
+# It looks like you may be committing a merge.
+# If this is not correct, please remove the file
+#	.git/MERGE_HEAD
+# and try again.
+
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch development
+# Your branch is up-to-date with 'origin/development'.
+#
+# All conflicts fixed but you are still merging.
+#
+# Changes to be committed:
+#	modified:   .gitignore
+#	modified:   FoundationEngine/FoundationEngine.csproj
+#	new file:   FoundationEngine/IO/MeshLoader.cs
+#	modified:   FoundationEngine/MainWindow.xaml.cs
+#	new file:   FoundationEngine/Resources/Models/monkey.babylon
+#	new file:   packages/SharpDX.2.6.3/SharpDX.2.6.3.nupkg
+#	new file:   packages/SharpDX.2.6.3/build/SharpDX.targets
+#	new file:   packages/SharpDX.2.6.3/lib/dummy.txt
+#	new file:   packages/SharpDX.2.6.3/tools/Install.ps1
+#	new file:   packages/SharpDX.2.6.3/tools/UnInstall.ps1
+#	new file:   packages/repositories.config
+#
+# Untracked files:
+#	FoundationEngine.v11.suo
+#
+

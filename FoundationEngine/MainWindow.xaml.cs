@@ -17,7 +17,8 @@ namespace FoundationEngine
 
 
         Mesh cube;
-        Camera mera = new Camera();
+        Mesh[] meshes = new Mesh[]{};
+        Camera camera = new Camera();
 
         //CTOR
         public MainWindow()
@@ -75,8 +76,10 @@ namespace FoundationEngine
 
             device = new Device(bmp, FrontBuffer);
 
-            mera.Position = new Vector3(0, 0, 10.0f);
-            mera.Target = Vector3.Zero;
+            meshes = FoundationEngine.IO.MeshLoader.LoadJSONFile("resources\\models\\monkey.babylon");
+
+            camera.Position = new Vector3(0, 0, 10.0f);
+            camera.Target = Vector3.Zero;
 
             // Registering to the XAML rendering loop. This function should get called 60 times a second on a normal monitor.
             CompositionTarget.Rendering += CompositionTarget_Rendering;
@@ -89,13 +92,16 @@ namespace FoundationEngine
         {
             device.Clear(Color.Black);
 
-            // rotating slightly the cube during each frame rendered
-            cube.Rotation = new Vector3(cube.Rotation.X + 0.01f, cube.Rotation.Y + 0.01f, cube.Rotation.Z);
+            foreach (var mesh in meshes)
+            {
+                // rotating slightly the meshes during each frame rendered
+                mesh.Rotation = new Vector3(mesh.Rotation.X + 0.01f, mesh.Rotation.Y + 0.01f, mesh.Rotation.Z);
+            }
 
             // Doing the various matrix operations
-            device.Render(mera, cube);
-            // Flushing the back buffer into the front buffer
+            device.Render(camera, meshes);
 
+            // Flushing the back buffer into the front buffer
             device.Present();
         }
     }
