@@ -1,6 +1,8 @@
 ﻿using FoundationEngine.Renderer;
 using SharpDX;
 using System;
+using System.Diagnostics;
+using System.Threading;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -14,7 +16,9 @@ namespace FoundationEngine
     public partial class MainWindow : Window
     {
         private Device device;
-
+        private Stopwatch fpsStopWatch = new Stopwatch();
+        Int32 lowestFps = int.MaxValue;
+        Int32 highestFps = int.MinValue;
 
         Mesh cube;
         Mesh[] meshes = new Mesh[]{};
@@ -24,6 +28,11 @@ namespace FoundationEngine
         public MainWindow()
         {
             InitializeComponent();
+
+            Thread.CurrentThread.Priority = ThreadPriority.Highest;
+
+            FPSCounterTextBlock.Text = Convert.ToString(0);
+            fpsStopWatch.Start();
 
             var mesh = new Mesh("Cube", 8, 12);
             mesh.Vertices[0] = new Vector3(-1, 1, 1);
@@ -103,6 +112,18 @@ namespace FoundationEngine
 
             // Flushing the back buffer into the front buffer
             device.Present();
+
+            //calculate FPS
+            var fps = Convert.ToInt32(1000 / fpsStopWatch.Elapsed.TotalMilliseconds);
+            if (fps > highestFps) highestFps = fps;
+            if (fps < lowestFps) lowestFps = fps;
+
+            FPSCounterTextBlock.Text = Convert.ToString(fps);
+            HighFPSCounterTextBlock.Text = Convert.ToString(highestFps);
+            LowFPSCounterTextBlock.Text = Convert.ToString(lowestFps);
+
+            fpsStopWatch.Reset();
+            fpsStopWatch.Start();
         }
     }
 }

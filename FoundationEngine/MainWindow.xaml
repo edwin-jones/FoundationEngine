@@ -4,6 +4,14 @@
         Title="Foundation Engine" Height="350" Width="525"
         Loaded="Page_Loaded">
     <Grid>
+        <StackPanel Orientation="Vertical">
+        <TextBlock>FPS:</TextBlock>
+        <TextBlock x:Name="FPSCounterTextBlock"/>
+            <TextBlock>HI:</TextBlock>
+            <TextBlock x:Name="HighFPSCounterTextBlock"/>
+            <TextBlock>LOW:</TextBlock>
+            <TextBlock x:Name="LowFPSCounterTextBlock"/>
+        </StackPanel>
         <Image x:Name="FrontBuffer"/>
     </Grid>
 </Window>

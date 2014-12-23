@@ -9,12 +9,12 @@ using System.Web.Script.Serialization;
 
 namespace FoundationEngine.IO
 {
-    class BablyonMesh
-    {
-        public Boolean autoClear { get; set; }
-        public Color clearColor;
-        public Color ambientColor;
-    }
+    //class BablyonMesh
+    //{
+    //    public Boolean autoClear { get; set; }
+    //    public Color clearColor;
+    //    public Color ambientColor;
+    //}
 
     static class MeshLoader
     {
@@ -23,15 +23,8 @@ namespace FoundationEngine.IO
         {
             var meshes = new List<Mesh>();
             var data = File.ReadAllText(fileName);
-            dynamic jsonObject = null;
-            try
-            {
-                jsonObject = new JavaScriptSerializer().DeserializeObject(data);
-            }
-            catch (Exception ex)
-            {
+            dynamic jsonObject = new JavaScriptSerializer().DeserializeObject(data);
 
-            }
             var tempArray = jsonObject["meshes"] as dynamic[];
 
             for (var meshIndex = 0; meshIndex < tempArray.Length; meshIndex++)
