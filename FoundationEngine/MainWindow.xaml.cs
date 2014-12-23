@@ -16,49 +16,21 @@ namespace FoundationEngine
     public partial class MainWindow : Window
     {
         private Device device;
-        private Stopwatch fpsStopWatch = new Stopwatch();
-        Int32 lowestFps = int.MaxValue;
-        Int32 highestFps = int.MinValue;
-
-        Mesh cube;
-        Mesh[] meshes = new Mesh[]{};
-        Camera camera = new Camera();
+        private DateTime previousRenderTime;
+        private Double lowestFps = int.MaxValue;
+        private Double highestFps = int.MinValue;
+        private Mesh[] meshes = new Mesh[]{};
+        private Camera camera = new Camera();
 
         //CTOR
         public MainWindow()
         {
             InitializeComponent();
 
-            Thread.CurrentThread.Priority = ThreadPriority.Highest;
-
+            //initialize fps counters
             FPSCounterTextBlock.Text = Convert.ToString(0);
-            fpsStopWatch.Start();
-
-            var mesh = new Mesh("Cube", 8, 12);
-            mesh.Vertices[0] = new Vector3(-1, 1, 1);
-            mesh.Vertices[1] = new Vector3(1, 1, 1);
-            mesh.Vertices[2] = new Vector3(-1, -1, 1);
-            mesh.Vertices[3] = new Vector3(1, -1, 1);
-            mesh.Vertices[4] = new Vector3(-1, 1, -1);
-            mesh.Vertices[5] = new Vector3(1, 1, -1);
-            mesh.Vertices[6] = new Vector3(1, -1, -1);
-            mesh.Vertices[7] = new Vector3(-1, -1, -1);
-
-            mesh.Faces[0] = new Face { A = 0, B = 1, C = 2 };
-            mesh.Faces[1] = new Face { A = 1, B = 2, C = 3 };
-            mesh.Faces[2] = new Face { A = 1, B = 3, C = 6 };
-            mesh.Faces[3] = new Face { A = 1, B = 5, C = 6 };
-            mesh.Faces[4] = new Face { A = 0, B = 1, C = 4 };
-            mesh.Faces[5] = new Face { A = 1, B = 4, C = 5 };
-
-            mesh.Faces[6] = new Face { A = 2, B = 3, C = 7 };
-            mesh.Faces[7] = new Face { A = 3, B = 6, C = 7 };
-            mesh.Faces[8] = new Face { A = 0, B = 2, C = 7 };
-            mesh.Faces[9] = new Face { A = 0, B = 4, C = 7 };
-            mesh.Faces[10] = new Face { A = 4, B = 5, C = 6 };
-            mesh.Faces[11] = new Face { A = 4, B = 6, C = 7 };
-
-            cube = mesh;
+            HighFPSCounterTextBlock.Text = Convert.ToString(0);
+            LowFPSCounterTextBlock.Text = Convert.ToString(0);
         }
 
         /// <summary>
@@ -85,20 +57,34 @@ namespace FoundationEngine
 
             device = new Device(bmp, FrontBuffer);
 
+            //load mesh(es) from file.
             meshes = FoundationEngine.IO.MeshLoader.LoadJSONFile("resources\\models\\monkey.babylon");
 
+            //position the camera
             camera.Position = new Vector3(0, 0, 10.0f);
             camera.Target = Vector3.Zero;
 
-            // Registering to the XAML rendering loop. This function should get called 60 times a second on a normal monitor.
+            // Registering to the XAML rendering loop.
             CompositionTarget.Rendering += CompositionTarget_Rendering;
         }
+
 
         /// <summary>
         /// Rendering loop handler
         /// </summary>
         void CompositionTarget_Rendering(object sender, object e)
         {
+            // Fps
+            var now = DateTime.Now;
+            var currentFps = 1000.0 / (now - previousRenderTime).TotalMilliseconds;
+            previousRenderTime = now;
+            if (currentFps > highestFps) highestFps = currentFps;
+            if (currentFps < lowestFps) lowestFps = currentFps;
+
+            FPSCounterTextBlock.Text = string.Format("{0:0.00}", currentFps);
+            LowFPSCounterTextBlock.Text = string.Format("{0:0.00}", lowestFps);
+            HighFPSCounterTextBlock.Text = string.Format("{0:0.00}", highestFps);
+
             device.Clear(Color.Black);
 
             foreach (var mesh in meshes)
@@ -112,18 +98,6 @@ namespace FoundationEngine
 
             // Flushing the back buffer into the front buffer
             device.Present();
-
-            //calculate FPS
-            var fps = Convert.ToInt32(1000 / fpsStopWatch.Elapsed.TotalMilliseconds);
-            if (fps > highestFps) highestFps = fps;
-            if (fps < lowestFps) lowestFps = fps;
-
-            FPSCounterTextBlock.Text = Convert.ToString(fps);
-            HighFPSCounterTextBlock.Text = Convert.ToString(highestFps);
-            LowFPSCounterTextBlock.Text = Convert.ToString(lowestFps);
-
-            fpsStopWatch.Reset();
-            fpsStopWatch.Start();
         }
     }
 }

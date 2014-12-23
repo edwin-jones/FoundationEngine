@@ -1,6 +1,7 @@
 ﻿using SharpDX;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using PixelFormat = System.Windows.Media.PixelFormat;
@@ -32,9 +33,9 @@ namespace FoundationEngine.Renderer
             this.renderContext = renderContext;
             // the back buffer size is equal to the number of pixels to draw
             // on screen (width*height) * 4 (R,G,B & Alpha values). 
-            backBuffer = new byte[bmp.PixelWidth * bmp.PixelHeight * 4];
+            backBuffer = new byte[Device.ViewPortWidth * Device.ViewPortHeight * 4];
 
-            depthBuffer = new float[bmp.PixelWidth * bmp.PixelHeight];
+            depthBuffer = new float[Device.ViewPortWidth * Device.ViewPortHeight];
         }
 
         // Clamping values to keep them between 0 and 1
@@ -123,8 +124,8 @@ namespace FoundationEngine.Renderer
             // The transformed coordinates will be based on coordinate system
             // starting on the center of the screen. But drawing on screen normally starts
             // from top left. We then need to transform them again to have x:0, y:0 on top left.
-            var x = point.X * bmp.PixelWidth + bmp.PixelWidth / 2.0f;
-            var y = -point.Y * bmp.PixelHeight + bmp.PixelHeight / 2.0f;
+            var x = point.X * Device.ViewPortWidth + Device.ViewPortWidth / 2.0f;
+            var y = -point.Y * Device.ViewPortHeight + Device.ViewPortHeight / 2.0f;
             return (new Vector3(x, y, point.Z));
         }
 
@@ -132,7 +133,7 @@ namespace FoundationEngine.Renderer
         public void DrawPoint(Vector3 point, Color4 color)
         {
             // Clipping what's visible on screen
-            if (point.X >= 0 && point.Y >= 0 && point.X < bmp.PixelWidth && point.Y < bmp.PixelHeight)
+            if (point.X >= 0 && point.Y >= 0 && point.X < Device.ViewPortWidth && point.Y < Device.ViewPortHeight)
             {
                 // Drawing a point
                 PutPixel((int)point.X, (int)point.Y, point.Z, color);
@@ -286,27 +287,21 @@ namespace FoundationEngine.Renderer
 
                 foreach (var face in mesh.Faces)
                 {
-                    DrawFace(mesh, face, transformMatrix, ref faceIndex);
+                    var vertexA = mesh.Vertices[face.A];
+                    var vertexB = mesh.Vertices[face.B];
+                    var vertexC = mesh.Vertices[face.C];
+
+                    var pixelA = Project(vertexA, transformMatrix);
+                    var pixelB = Project(vertexB, transformMatrix);
+                    var pixelC = Project(vertexC, transformMatrix);
+
+                    var color = 0.25f + (faceIndex % mesh.Faces.Length) * 0.75f / mesh.Faces.Length;
+                    DrawTriangle(pixelA, pixelB, pixelC, new Color4(color, color, color, 1));
+
+
+                    faceIndex++;
                 }
             }
-        }
-        Object lockObject = new Object();
-        void DrawFace(Mesh mesh, Face face, SharpDX.Matrix transformMatrix, ref Int32 faceIndex)
-        {
-            var vertexA = mesh.Vertices[face.A];
-            var vertexB = mesh.Vertices[face.B];
-            var vertexC = mesh.Vertices[face.C];
-
-            var pixelA = Project(vertexA, transformMatrix);
-            var pixelB = Project(vertexB, transformMatrix);
-            var pixelC = Project(vertexC, transformMatrix);
-
-            var color = 0.25f + (faceIndex % mesh.Faces.Length) * 0.75f / mesh.Faces.Length;
-            DrawTriangle(pixelA, pixelB, pixelC, new Color4(color, color, color, 1));
-
-
-            faceIndex++;
-            
         }
     }
 }
