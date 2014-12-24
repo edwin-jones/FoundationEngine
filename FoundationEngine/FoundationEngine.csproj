@@ -66,6 +66,8 @@
     <Compile Include="Renderer\Device.cs" />
     <Compile Include="Renderer\Face.cs" />
     <Compile Include="Renderer\Mesh.cs" />
+    <Compile Include="Renderer\ScanLineData.cs" />
+    <Compile Include="Renderer\Vertex.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -63,8 +63,13 @@ namespace FoundationEngine.IO
                     var x = (float)verticesArray[index * verticesStep];
                     var y = (float)verticesArray[index * verticesStep + 1];
                     var z = (float)verticesArray[index * verticesStep + 2];
-                    mesh.Vertices[index] = new Vector3(x, y, z);
+                    // Loading the vertex normal exported by Blender
+                    var nx = (float)verticesArray[index * verticesStep + 3];
+                    var ny = (float)verticesArray[index * verticesStep + 4];
+                    var nz = (float)verticesArray[index * verticesStep + 5];
+                    mesh.Vertices[index] = new Vertex { Coordinates = new Vector3(x, y, z), Normal = new Vector3(nx, ny, nz) };
                 }
+
 
                 // Then filling the Faces array
                 for (var index = 0; index < facesCount; index++)
