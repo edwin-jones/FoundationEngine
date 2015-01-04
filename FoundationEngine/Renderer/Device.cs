@@ -316,8 +316,8 @@ namespace FoundationEngine.Renderer
         public void Render(Camera camera, params Mesh[] meshes)
         {
             // To understand this part, please read the prerequisites resources
-            var cameraPosition = new Vector3(camera.Position.X, camera.Position.Y, camera.Position.Z);
-            var cameraTarget = new Vector3(camera.Target.X, camera.Target.Y, camera.Target.Z);
+            var cameraPosition = new Vector3((Single)camera.Position.X, (Single)camera.Position.Y, (Single)camera.Position.Z);
+            var cameraTarget = new Vector3((Single)camera.Target.X, (Single)camera.Target.Y, (Single)camera.Target.Z);
 
             var viewMatrix = SharpDX.Matrix.LookAtLH(cameraPosition, cameraTarget, Vector3.UnitY);
             var projectionMatrix = SharpDX.Matrix.PerspectiveFovRH(0.78f,
@@ -328,9 +328,9 @@ namespace FoundationEngine.Renderer
             {
                 // Beware to apply rotation before translation 
 
-                var worldMatrix = SharpDX.Matrix.RotationYawPitchRoll(mesh.Rotation.Y,
-                                                              mesh.Rotation.X, mesh.Rotation.Z) *
-                                  SharpDX.Matrix.Translation(mesh.Position.X, mesh.Position.Y, mesh.Position.Z);
+                var worldMatrix = SharpDX.Matrix.RotationYawPitchRoll((Single)mesh.Rotation.Y,
+                                                              (Single)mesh.Rotation.X, (Single)mesh.Rotation.Z) *
+                                  SharpDX.Matrix.Translation((Single)mesh.Position.X, (Single)mesh.Position.Y, (Single)mesh.Position.Z);
 
                 var transformMatrix = worldMatrix * viewMatrix * projectionMatrix;
 

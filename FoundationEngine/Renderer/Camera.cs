@@ -1,4 +1,4 @@
-﻿using FoundationEngine.Math;
+﻿using System.Windows.Media.Media3D;
 
 namespace FoundationEngine.Renderer
 {
@@ -7,7 +7,7 @@ namespace FoundationEngine.Renderer
     /// </summary>
     public class Camera
     {
-        public Vector3 Position { get; set; }
-        public Vector3 Target { get; set; }
+        public Vector3D Position { get; set; }
+        public Vector3D Target { get; set; }
     }  
 }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web.Helpers;
 using System.Web.Script.Serialization;
+using System.Windows.Media.Media3D;
 
 namespace FoundationEngine.IO
 {
@@ -82,7 +83,7 @@ namespace FoundationEngine.IO
 
                 // Getting the position you've set in Blender
                 var position = tempArray[meshIndex]["position"];
-                mesh.Position = new FoundationEngine.Math.Vector3((float)position[0], (float)position[1], (float)position[2]);
+                mesh.Position = new Vector3D((Double)position[0], (Double)position[1], (Double)position[2]);
                 meshes.Add(mesh);
             }
 

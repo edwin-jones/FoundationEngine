@@ -1,5 +1,5 @@
-﻿using FoundationEngine.Math;
-using System;
+﻿using System;
+using System.Windows.Media.Media3D;
 
 namespace FoundationEngine.Renderer
 {
@@ -11,8 +11,8 @@ namespace FoundationEngine.Renderer
         public String Name { get; set; }
         public Vertex[] Vertices { get; private set; }
         public Face[] Faces { get; set; }
-        public Vector3 Position { get; set; }
-        public Vector3 Rotation { get; set; }
+        public Vector3D Position { get; set; }
+        public Vector3D Rotation { get; set; }
 
         public Mesh(String name, Int32 verticesCount, Int32 facesCount)
         {
