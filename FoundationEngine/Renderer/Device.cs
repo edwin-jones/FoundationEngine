@@ -16,7 +16,6 @@ namespace FoundationEngine.Renderer
         public const Int32 ViewPortWidth = 640;
         public const Int32 ViewPortHeight = 480;
         public const Int32 ViewPortDPI = 96;
-        public readonly Vector3 SunPosition = new Vector3(0, 0, 0);
 
         private byte[] backBuffer;
         private BitmapSource bmp;
@@ -42,7 +41,7 @@ namespace FoundationEngine.Renderer
         // Clamping values to keep them between 0 and 1
         float Clamp(float value, float min = 0, float max = 1)
         {
-            return Math.Max(min, Math.Min(value, max));
+            return System.Math.Max(min, System.Math.Min(value, max));
         }
 
         // Interpolating the value between 2 vertices 
@@ -162,7 +161,7 @@ namespace FoundationEngine.Renderer
             normal.Normalize();
             lightDirection.Normalize();
 
-            return Math.Max(0, Vector3.Dot(normal, lightDirection));
+            return System.Math.Max(0, Vector3.Dot(normal, lightDirection));
         }
 
         // drawing line between 2 points from left to right
@@ -317,7 +316,10 @@ namespace FoundationEngine.Renderer
         public void Render(Camera camera, params Mesh[] meshes)
         {
             // To understand this part, please read the prerequisites resources
-            var viewMatrix = SharpDX.Matrix.LookAtLH(camera.Position, camera.Target, Vector3.UnitY);
+            var cameraPosition = new Vector3(camera.Position.X, camera.Position.Y, camera.Position.Z);
+            var cameraTarget = new Vector3(camera.Target.X, camera.Target.Y, camera.Target.Z);
+
+            var viewMatrix = SharpDX.Matrix.LookAtLH(cameraPosition, cameraTarget, Vector3.UnitY);
             var projectionMatrix = SharpDX.Matrix.PerspectiveFovRH(0.78f,
                                                            (float)bmp.PixelWidth / bmp.PixelHeight,
                                                            0.01f, 1.0f);
@@ -325,9 +327,10 @@ namespace FoundationEngine.Renderer
             foreach (Mesh mesh in meshes)
             {
                 // Beware to apply rotation before translation 
+
                 var worldMatrix = SharpDX.Matrix.RotationYawPitchRoll(mesh.Rotation.Y,
                                                               mesh.Rotation.X, mesh.Rotation.Z) *
-                                  SharpDX.Matrix.Translation(mesh.Position);
+                                  SharpDX.Matrix.Translation(mesh.Position.X, mesh.Position.Y, mesh.Position.Z);
 
                 var transformMatrix = worldMatrix * viewMatrix * projectionMatrix;
 

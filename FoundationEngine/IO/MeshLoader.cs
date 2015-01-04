@@ -82,7 +82,7 @@ namespace FoundationEngine.IO
 
                 // Getting the position you've set in Blender
                 var position = tempArray[meshIndex]["position"];
-                mesh.Position = new Vector3((float)position[0], (float)position[1], (float)position[2]);
+                mesh.Position = new FoundationEngine.Math.Vector3((float)position[0], (float)position[1], (float)position[2]);
                 meshes.Add(mesh);
             }
 

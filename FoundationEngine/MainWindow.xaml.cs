@@ -61,8 +61,8 @@ namespace FoundationEngine
             meshes = FoundationEngine.IO.MeshLoader.LoadJSONFile("resources\\models\\monkey.babylon");
 
             //position the camera
-            camera.Position = new Vector3(0, 0, 10.0f);
-            camera.Target = Vector3.Zero;
+            camera.Position = new FoundationEngine.Math.Vector3(0, 0, 10.0f);
+            camera.Target = FoundationEngine.Math.Vector3.Zero;
 
             // Registering to the XAML rendering loop.
             CompositionTarget.Rendering += CompositionTarget_Rendering;
@@ -90,7 +90,7 @@ namespace FoundationEngine
             foreach (var mesh in meshes)
             {
                 // rotating slightly the meshes during each frame rendered
-                mesh.Rotation = new Vector3(mesh.Rotation.X + 0.01f, mesh.Rotation.Y + 0.01f, mesh.Rotation.Z);
+                mesh.Rotation = new FoundationEngine.Math.Vector3(mesh.Rotation.X + 0.01f, mesh.Rotation.Y + 0.01f, mesh.Rotation.Z);
             }
 
             // Doing the various matrix operations

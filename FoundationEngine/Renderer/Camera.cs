@@ -1,4 +1,4 @@
-﻿using SharpDX;
+﻿using FoundationEngine.Math;
 
 namespace FoundationEngine.Renderer
 {
